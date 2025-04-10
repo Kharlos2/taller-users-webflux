@@ -2,11 +2,11 @@ package co.com.nequi.redis.template;
 
 import co.com.nequi.model.user.User;
 import co.com.nequi.model.user.gateways.IUserCacheGateway;
+import co.com.nequi.redis.template.entity.UserRedis;
 import co.com.nequi.redis.template.helper.ReactiveTemplateAdapterOperations;
 import org.reactivecommons.utils.ObjectMapper;
 import org.springframework.data.redis.connection.ReactiveRedisConnectionFactory;
 import org.springframework.stereotype.Component;
-import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 @Component
@@ -34,17 +34,8 @@ public class ReactiveRedisTemplateAdapter extends ReactiveTemplateAdapterOperati
         return super.save(key, user);
     }
 
-    @Override
-    public Flux<User> filterByName(String name) {
-        String key = generateKeyByName(name);
-        return super.findById(key).flux();
-    }
-
     private String generateKeyById(Long id) {
         return String.format("user:id:%d", id);
     }
 
-    private String generateKeyByName(String name) {
-        return String.format("user:name:%s", name.toLowerCase());
-    }
 }

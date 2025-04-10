@@ -5,10 +5,6 @@ spring:
     name: "TallerNequi"
   devtools:
     add-properties: false
-  r2dbc:
-    url: "${R2DBC_URL:r2dbc:postgresql://127.0.0.1:5432/postgres?currentSchema=public}"
-    username: "${R2DBC_USERNAME:postgres}"
-    password: "${R2DBC_PASSWORD:1234}"
   sql:
     init:
       mode: "always"
@@ -17,6 +13,16 @@ spring:
   redis:
     host: "localhost"
     port: 6379
+
+adapters:
+  r2dbc:
+    host: "127.0.0.1"
+    port: 5432
+    database: "postgres"
+    schema: "public"
+    username: "postgres"
+    password: "1234"
+
 management:
   endpoints:
     web:

@@ -1,5 +1,6 @@
-package co.com.nequi.redis.template;
+package co.com.nequi.redis.template.redisconfig;
 
+import co.com.nequi.redis.template.entity.UserRedis;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.connection.ReactiveRedisConnectionFactory;
