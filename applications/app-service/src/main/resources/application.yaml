@@ -1,0 +1,30 @@
+server:
+  port: 8080
+spring:
+  application:
+    name: "TallerNequi"
+  devtools:
+    add-properties: false
+  r2dbc:
+    url: "${R2DBC_URL:r2dbc:postgresql://127.0.0.1:5432/postgres?currentSchema=public}"
+    username: "${R2DBC_USERNAME:postgres}"
+    password: "${R2DBC_PASSWORD:1234}"
+  sql:
+    init:
+      mode: "always"
+  profiles:
+    include: null
+  redis:
+    host: "localhost"
+    port: 6379
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "health,prometheus"
+  endpoint:
+    health:
+      probes:
+        enabled: true
+cors:
+  allowed-origins: "http://localhost:4200,http://localhost:8080"
