@@ -11,17 +11,26 @@ services:
       - POSTGRES_PASSWORD=1234
       - POSTGRES_DB=users
 
-  pgadmin:
-    image: dpage/pgadmin4
-    environment:
-      PGADMIN_DEFAULT_EMAIL: "admin@admin.com"
-      PGADMIN_DEFAULT_PASSWORD: "admin"
-    ports:
-      - "80:80"
-    depends_on:
-      - postgres
-
   redis:
     image: redis
     ports:
       - "6379:6379"
+
+  localstack:
+    container_name: "localstack"
+    image: localstack/localstack
+    ports:
+      - "4566:4566"
+      - "4571:4571"
+    environment:
+      - SERVICES=dynamodb,sqs
+      - DYNAMODB_SHARE_DB=1
+      - DEBUG=1
+      - DATA_DIR=/tmp/localstack/data
+      - EDGE_PORT=4566
+      - AWS_ACCESS_KEY_ID=12345
+      - AWS_SECRET_ACCESS_KEY=12345
+      - AWS_REGION=us-east-1
+    volumes:
+      - "./localstack:/var/lib/localstack"
+      - "/var/run/docker.sock:/var/run/docker.sock"

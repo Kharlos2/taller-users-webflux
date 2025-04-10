@@ -1,6 +1,11 @@
 apply plugin: 'org.springframework.boot'
 
 dependencies {
+	implementation project(':dynamo-db')
+	implementation project(':sqs-listener')
+	implementation project(':sqs-sender')
+	implementation 'software.amazon.awssdk:sts'
+	implementation project(':metrics')
 	implementation project(':web-client')
 	implementation project(':redis')
 	implementation project(':reactive-web')

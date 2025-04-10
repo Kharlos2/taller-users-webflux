@@ -4,6 +4,8 @@ import co.com.nequi.model.user.User;
 import co.com.nequi.model.user.exceptions.UserNotFoundException;
 import co.com.nequi.model.user.gateways.IUserCacheGateway;
 import co.com.nequi.model.user.gateways.IUserDBGateway;
+import co.com.nequi.model.user.gateways.IUserDynamoTraceabilityGateway;
+import co.com.nequi.model.user.gateways.IUserSendMessageGateway;
 import co.com.nequi.model.user.gateways.IUserWebClientGateway;
 import lombok.RequiredArgsConstructor;
 import reactor.core.publisher.Flux;
@@ -17,13 +19,20 @@ public class UserUseCase {
     private final IUserCacheGateway userCacheGateway;
     private final IUserWebClientGateway userWebClientGateway;
     private final IUserDBGateway userDBGateway;
+    private final IUserSendMessageGateway userSendMessageGateway;
+    private final IUserDynamoTraceabilityGateway userDynamoTraceabilityGateway;
 
-    public Mono<User> save (Long id){
+    public Mono<User> save(Long id) {
         return userDBGateway.findByIdApi(id)
                 .switchIfEmpty(
                         userWebClientGateway.findById(id)
                                 .flatMap(user -> userDBGateway.save(user)
-                                        .flatMap(userCacheGateway::save))
+                                        .flatMap(savedUser -> userCacheGateway.save(savedUser)
+                                                .flatMap(cachedUser -> userSendMessageGateway.send(cachedUser)
+                                                        .thenReturn(cachedUser)
+                                                )
+                                        )
+                                )
                 );
     }
 
@@ -44,4 +53,7 @@ public class UserUseCase {
         return userDBGateway.filterByName(name);
     }
 
+    public Mono<Void> saveTraceability(User user){
+        return userDynamoTraceabilityGateway.save(user).then();
+    }
 }

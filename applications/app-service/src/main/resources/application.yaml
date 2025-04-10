@@ -13,7 +13,6 @@ spring:
   redis:
     host: "localhost"
     port: 6379
-
 adapters:
   r2dbc:
     host: "127.0.0.1"
@@ -22,7 +21,6 @@ adapters:
     schema: "public"
     username: "postgres"
     password: "1234"
-
 management:
   endpoints:
     web:
@@ -34,3 +32,21 @@ management:
         enabled: true
 cors:
   allowed-origins: "http://localhost:4200,http://localhost:8080"
+adapter:
+  sqs:
+    region: "us-east-1"
+    queueUrl: "http://sqs.us-east-1.localhost.localstack.cloud:4566/000000000000/UsersQueue"
+    endpoint: "http://localhost:4566"
+entrypoint:
+  sqs:
+    region: "us-east-1"
+    endpoint: "http://localhost:4566"
+    queueUrl: "http://sqs.us-east-1.localhost.localstack.cloud:4566/000000000000/UsersQueue"
+    waitTimeSeconds: 20
+    maxNumberOfMessages: 10
+    visibilityTimeoutSeconds: 10
+    numberOfThreads: 1
+aws:
+  region: us-east-1
+  dynamodb:
+    endpoint: "http://localhost:4566"

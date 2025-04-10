@@ -1,11 +1,14 @@
 package co.com.nequi.config;
 
+import co.com.nequi.dynamodb.DynamoDBTemplateAdapter;
 import co.com.nequi.model.user.gateways.IUserCacheGateway;
 import co.com.nequi.model.user.gateways.IUserDBGateway;
+import co.com.nequi.model.user.gateways.IUserDynamoTraceabilityGateway;
 import co.com.nequi.model.user.gateways.IUserWebClientGateway;
 import co.com.nequi.r2dbc.repository.IUserRepository;
 import co.com.nequi.r2dbc.UserRepositoryAdapter;
 import co.com.nequi.redis.template.ReactiveRedisTemplateAdapter;
+import co.com.nequi.sqs.sender.SQSSender;
 import co.com.nequi.usecase.user.UserUseCase;
 import co.com.nequi.webclient.adapter.UserWebClientAdapter;
 import co.com.nequi.webclient.mappers.IUserWebClientMapper;
@@ -16,12 +19,16 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.connection.ReactiveRedisConnectionFactory;
 import org.springframework.web.reactive.function.client.WebClient;
 
+
 @Configuration
 @RequiredArgsConstructor
 public class UseCasesConfig {
 
         private final WebClient webClient;
         private final IUserWebClientMapper userWebClientMapper;
+        private final ReactiveRedisTemplateAdapter reactiveRedisTemplateAdapter;
+        private final SQSSender sqsSender;
+        private final DynamoDBTemplateAdapter dynamoDBTemplateAdapter;
 
         @Bean
         public IUserWebClientGateway userWebClientGateway(){
@@ -38,8 +45,11 @@ public class UseCasesConfig {
                                            ObjectMapper mapper){
                 return new ReactiveRedisTemplateAdapter(connectionFactory, mapper);
         }
+
+
+
         @Bean
-        public UserUseCase userUseCase(IUserDBGateway userDBGateway, IUserWebClientGateway userWebClientGateway, IUserCacheGateway userCacheGateway){
-                return new UserUseCase(userCacheGateway,userWebClientGateway,userDBGateway);
+        public UserUseCase userUseCase(IUserDBGateway userDBGateway, IUserWebClientGateway userWebClientGateway){
+               return new UserUseCase(reactiveRedisTemplateAdapter,userWebClientGateway,userDBGateway,sqsSender,dynamoDBTemplateAdapter);
         }
 }
